@@ -1,5 +1,6 @@
 def main():
     usuarios = []
+    categorias = []
 
     while True:
 
@@ -15,7 +16,7 @@ def main():
             usuario = input("Cadastre o usuário: ")
             senha = input("Crie uma senha: ")
 
-            usuarios.append([usuario, senha, 131, 100])
+            usuarios.append([usuario, senha, 0, 100, []])
 
             print("Cliente cadastrado com sucesso!")
 
@@ -104,12 +105,26 @@ def menuInicial(usuarios, indice_usuario):
 def menuFatura(usuarios, indice_usuario):
 
     print("===================================")
-    print("==             FATURA             ==")
+    print("==             FATURA            ==")
     print("===================================")
 
-    fatura = usuarios[indice_usuario][2]
+    compras = usuarios[indice_usuario][4]
+    total = 0
 
-    print(f"Fatura: R$ {fatura:.2f}")
+    if len(compras) == 0:
+        print("Nenhuma compra realizada.")
+        return
+
+    print("Compras realizadas:\n")
+
+    for compra in compras:
+        print(f"Categoria: {compra['categoria']}")
+        print(f"Valor: R$ {compra['valor']:.2f}")
+        print("----------------------")
+
+        total += compra['valor']
+
+    print(f"\nTOTAL DA FATURA: R$ {total:.2f}")
 
 def menuCompra(usuarios, indice_usuario):
 
@@ -118,14 +133,25 @@ def menuCompra(usuarios, indice_usuario):
     print("===================================")
 
     valor = float(input("Digite o valor da compra: R$ "))
+    categoria = str(input("Digite a categoria da compra (Ex.: Viagem): "))
+
+    fatura = usuarios[indice_usuario][2]
+    limite = usuarios[indice_usuario][3]
 
     if valor <= 0:
 
         print("Valor inválido")
 
-    else:
+    elif fatura + valor > limite:
+        print("Compra recusada. Limite excedido.")
 
+    else:
         usuarios[indice_usuario][2] += valor
+
+        usuarios[indice_usuario][4].append({
+            "categoria": categoria,
+            "valor": valor
+    })
 
         print("Compra realizada com sucesso")
         print(f"Fatura: R$ {usuarios[indice_usuario][2]:.2f}")
