@@ -1,32 +1,29 @@
-import os  
+import os
 
 ARQUIVO_DADOS = "dados_usuarios.txt"
 
 def salvar_dados(usuarios):
     with open(ARQUIVO_DADOS, "w") as arquivo:
         for u in usuarios:
-            linha = f"{u};{u[10]};{u[11]};{u[12]};{u[7]}\n"
-            arquivo.write(linha) # [8]
+            linha = f"{u};{u[1]};{u[2]};{u[3]};{u[4]}\n"
 
 def carregar_dados():
     usuarios = []
-
     if os.path.exists(ARQUIVO_DADOS):
         with open(ARQUIVO_DADOS, "r") as arquivo:
             for linha in arquivo:
                 dados = linha.strip().split(";")
                 usuario = dados
-                senha = dados[10]
-                fatura = float(dados[11])
-                limite = float(dados[12])
-                compras = eval(dados[7]) 
+                senha = dados[1]
+                fatura = float(dados[7])
+                limite = float(dados[8])
+                compras = eval(dados[9]) 
                 usuarios.append([usuario, senha, fatura, limite, compras])
     return usuarios
 
 def main():
     usuarios = carregar_dados()
-    categorias = []
-
+    
     while True:
         print("\n--- Dapper Finanças ---")
         print("1 - Cadastrar Conta")
@@ -53,18 +50,16 @@ def main():
                  
                 for i in range(len(usuarios)):
                     if (usuarios[i] == usuario_digitado and
-                            usuarios[i][10] == senha_digitada):
+                            usuarios[i][1] == senha_digitada):
                         indice_usuario = i
                         break
 
                 if indice_usuario != -1:
                     print("\nAcesso permitido!")
-                    menuInicial(usuarios, indice_usuario)
                     break
                 else:
                     tentativas += 1
-                    print("\nUsuário ou senha incorretos!")
-                    print(f"Tentativas restantes: {3 - tentativas}")
+                    print(f"\nUsuário ou senha incorretos! Tentativas restantes: {3 - tentativas}")
 
             if tentativas == 3:
                 print("Acesso bloqueado!")
@@ -73,8 +68,6 @@ def main():
             salvar_dados(usuarios)
             print("Programa encerrado!")
             break
-        else:
-            print("Opção inválida!")
 
 def menuInicial(usuarios, indice_usuario):
     continuar = True
