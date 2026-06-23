@@ -5,7 +5,8 @@ ARQUIVO_DADOS = "dados_usuarios.txt"
 def salvar_dados(usuarios):
     with open(ARQUIVO_DADOS, "w") as arquivo:
         for u in usuarios:
-            linha = f"{u};{u[1]};{u[2]};{u[3]};{u[4]}\n"
+            linha = f"{u[0]};{u[1]};{u[2]};{u[3]};{u[4]}\n"
+            arquivo.write(linha)
 
 def carregar_dados():
     usuarios = []
@@ -13,17 +14,17 @@ def carregar_dados():
         with open(ARQUIVO_DADOS, "r") as arquivo:
             for linha in arquivo:
                 dados = linha.strip().split(";")
-                usuario = dados
+                usuario = dados[0]
                 senha = dados[1]
-                fatura = float(dados[7])
-                limite = float(dados[8])
-                compras = eval(dados[9]) 
+                fatura = float(dados[2])
+                limite = float(dados[3])
+                compras = eval(dados[4])
                 usuarios.append([usuario, senha, fatura, limite, compras])
     return usuarios
 
 def main():
     usuarios = carregar_dados()
-    
+
     while True:
         print("\n--- Dapper Finanças ---")
         print("1 - Cadastrar Conta")
@@ -37,7 +38,7 @@ def main():
             senha = input("Crie uma senha: ")
 
             usuarios.append([usuario, senha, 0, 100, []])
-            
+
             salvar_dados(usuarios)
             print("Cliente cadastrado com sucesso!")
 
@@ -47,15 +48,16 @@ def main():
                 usuario_digitado = input("\nUsuário: ")
                 senha_digitada = input("Senha: ")
                 indice_usuario = -1
-                 
+
                 for i in range(len(usuarios)):
-                    if (usuarios[i] == usuario_digitado and
+                    if (usuarios[i][0] == usuario_digitado and
                             usuarios[i][1] == senha_digitada):
                         indice_usuario = i
                         break
 
                 if indice_usuario != -1:
                     print("\nAcesso permitido!")
+                    menuInicial(usuarios, indice_usuario)
                     break
                 else:
                     tentativas += 1
@@ -102,47 +104,54 @@ def menuFatura(usuarios, indice_usuario):
     print("===================================")
     print("==             FATURA            ==")
     print("===================================")
-    compras = usuarios[indice_usuario][7]
+    compras = usuarios[indice_usuario][4]
     total = 0
+
     if len(compras) == 0:
         print("Nenhuma compra realizada.")
         return
+
     print("Compras realizadas:\n")
     for compra in compras:
         print(f"Categoria: {compra['categoria']}")
         print(f"Valor: R$ {compra['valor']:.2f}")
         print("----------------------")
         total += compra['valor']
+
     print(f"\nTOTAL DA FATURA: R$ {total:.2f}")
 
 def menuCompra(usuarios, indice_usuario):
     print("===================================")
     print("==            COMPRA             ==")
     print("===================================")
+
     valor = float(input("Digite o valor da compra: R$ "))
     categoria = str(input("Digite a categoria da compra (Ex.: Viagem): "))
-    fatura = usuarios[indice_usuario][11]
-    limite = usuarios[indice_usuario][12]
+
+    fatura = usuarios[indice_usuario][2]
+    limite = usuarios[indice_usuario][3]
 
     if valor <= 0:
         print("Valor inválido")
     elif fatura + valor > limite:
         print("Compra recusada. Limite excedido.")
     else:
-        usuarios[indice_usuario][11] += valor
-        usuarios[indice_usuario][7].append({
+        usuarios[indice_usuario][2] += valor
+        usuarios[indice_usuario][4].append({
             "categoria": categoria,
             "valor": valor
         })
         salvar_dados(usuarios)
+
         print("Compra realizada com sucesso")
-        print(f"Fatura: R$ {usuarios[indice_usuario][11]:.2f}")
+        print(f"Fatura: R$ {usuarios[indice_usuario][2]:.2f}")
 
 def menuLimite(usuarios, indice_usuario):
     print("===================================")
     print("==         MOSTRAR LIMITE        ==")
     print("===================================")
-    limite = usuarios[indice_usuario][12]
+
+    limite = usuarios[indice_usuario][3]
     print(f"Limite: R$ {limite:.2f}")
 
 def menuRetornar():
